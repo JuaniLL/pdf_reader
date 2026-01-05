@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Factura PDF a Excel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+        }
+        #drop-zone {
+            border: 2px dashed #999;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            color: #666;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        #drop-zone.hover {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+            color: #007bff;
+        }
+        #fileInput {
+            display: none;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+<h1>Convertir factura PDF a Excel</h1>
+<p>Arrastrá tu archivo PDF de factura o hacé clic en el recuadro para seleccionarlo.
+    Al enviar, se descargará automáticamente un Excel con <strong>Producto / Subtotal / Subtotal c/IVA</strong>.</p>
+
+<form th:action="@{/procesar}" method="post" enctype="multipart/form-data">
+    <div id="drop-zone">
+        Soltá aquí tu archivo PDF<br>
+        <small>o hacé clic para seleccionarlo</small>
+        <br><br>
+        <span id="file-name"></span>
+        <input type="file" id="fileInput" name="file" accept="application/pdf" required>
+    </div>
+
+    <button type="submit">Generar Excel</button>
+</form>
+
+<script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('fileInput');
+    const fileNameSpan = document.getElementById('file-name');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('hover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('hover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('hover');
+        if (e.dataTransfer.files.length > 0) {
+            fileInput.files = e.dataTransfer.files;
+            fileNameSpan.textContent = e.dataTransfer.files[0].name;
+        }
+    });
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            fileNameSpan.textContent = fileInput.files[0].name;
+        }
+    });
+</script>
+</body>
+</html>
